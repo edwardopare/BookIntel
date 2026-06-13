@@ -1,0 +1,10 @@
+requests 
+beautifulsoup4
+sqlalchemy
+psycopg2-binary
+python-dotenv 
+pandas
+fastapi
+uvicorn
+openpyxl
+pytest
