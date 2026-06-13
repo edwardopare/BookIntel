@@ -49,47 +49,33 @@ def scrape_book_data(url):
     return items_data
 
 # --- MAIN LOOP ---
-all_books = []
-# Start directly with the full URL of the first page
-current_url = "https://books.toscrape.com/catalogue/category/books_1/index.html"
 
-while current_url:
-    print(f"Scraping: {current_url}")
-    
-    books = scrape_book_data(current_url)
-    
-    if not books:
-        print("No books found on this page. Stopping.")
-        break
-    
-    all_books.extend(books)
-    
-    # Check for the "Next" button to find the subsequent URL
-    response = requests.get(current_url)
-    soup = BeautifulSoup(response.content, "html.parser")
-    
-    next_button = soup.find("li", class_="next")
-    
-    if next_button:
-        next_link = next_button.find("a")["href"]
-        current_url = urljoin(current_url, next_link)
-    else:
-        print("No 'Next' button found. Reached last page.")
-        current_url = None  
+def run_scraper():
+    all_books = []
+    # Start directly with the full URL of the first page
+    current_url = "https://books.toscrape.com/catalogue/category/books_1/index.html"
 
-# # --- SAVE TO CSV ---
-# filename = "final_scrapped_data.csv"
-# if all_books:
-#     with open(filename, mode='w', newline='', encoding='utf-8') as file:
-#         fieldnames = ["title", "price", "stock", "rating", "link"]
-#         writer = csv.DictWriter(file, fieldnames=fieldnames)
+    while current_url:
+        print(f"Scraping: {current_url}")
         
-#         writer.writeheader()
-#         writer.writerows(all_books)
-    
-#     print(f"\nSuccess! Scraped {len(all_books)} books. Data saved to {filename}")
-# else:
-#     print("No data saved.")  
+        books = scrape_book_data(current_url)
+        
+        if not books:
+            print("No books found on this page. Stopping.")
+            break
+        
+        all_books.extend(books)
+        
+        # Check for the "Next" button to find the subsequent URL
+        response = requests.get(current_url)
+        soup = BeautifulSoup(response.content, "html.parser")
+        
+        next_button = soup.find("li", class_="next")
+        
+        if next_button:
+            next_link = next_button.find("a")["href"]
+            current_url = urljoin(current_url, next_link)
+        else:
+            print("No 'Next' button found. Reached last page.")
+            current_url = None  
 
-#save to database
-save_data(all_books,table_name="books_table",if_exists="replace") 
